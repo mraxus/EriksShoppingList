@@ -1,14 +1,14 @@
-## Interface: 60000
-## Title: Eriks Shopping List
-## Author: ErikBloodAxe
+## Interface: 60200
+## Title: Eriks Shopping List Ex
+## Author: ErikBloodAxe + Coztic
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## Dependencies: Blizzard_TradeSkillUI
 ## SavedVariables: ESL_CRAFTSDB,ESL_CRAFTSINFO,ESL_SHORTCUTS, ESL_RECIPESVERSION, ESL_SHORTCUTSVERSION
 ## SavedVariablesPerCharacter: ESL_BAGSDB
 
-EriksShoppingList.xml
-EriksShoppingList.lua
+EriksShoppingListEx.xml
+EriksShoppingListEx.lua
 RecipeScan.lua
 RecipeInfo.lua
 RecipeDraw.lua

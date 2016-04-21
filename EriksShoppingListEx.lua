@@ -20,7 +20,7 @@ local invSlots, invSlotID
 local haveMats
 local checkedOpening
 
-local ADDON_NAME = 'EriksShoppingList';
+local ADDON_NAME = 'EriksShoppingListEx';
 
 local ProfessionSkill = {
 	["Alchemy"] = "Alchemy",
