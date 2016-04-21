@@ -3,9 +3,6 @@
 
 invSlotID = nil;
 
-CreateFrame("GameTooltip", "ESLDataScanTooltip", UIParent, "GameTooltipTemplate")
-ESLDataScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-
 local SkillTypeToColor = {
 	["trivial"] = 0,		-- grey
 	["easy"] = 1,			-- green
@@ -122,6 +119,7 @@ end
 
 local function NotReadyForScan()
 	local tradeskillName = GetTradeSkillLine()
+	eprint('Checking ' .. tradeskillName .. '...')
 	if not tradeskillName or tradeskillName == "UNKNOWN" then
 		--eprint(" scan aborted: no tradeskillname");
 	-- may happen after a patch, or under extreme lag, so do not save anything to the db !
@@ -152,14 +150,6 @@ local function UpdateCraftsIcon(tradeskillName)
 	ESL_CRAFTSINFO[tradeskillName]["icon"] = GetTradeSkillTexture();
 end
 
-local function CustomGetTradeSkillReagentItemLink( recipeIndex, reagentIndex)
-	local tooltip = ESLDataScanTooltip;
-	tooltip:ClearLines();
-	tooltip:SetTradeSkillItem(recipeIndex, reagentIndex);
-	local _, link = tooltip:GetItem();
-	return link;
-end
-
 local function GetReagentStrings(recipeIndex)
 	local reagents = {};
 	local numReagents = GetTradeSkillNumReagents(recipeIndex);
@@ -169,8 +159,7 @@ local function GetReagentStrings(recipeIndex)
 		local _,_,reagentCount = GetTradeSkillReagentInfo( recipeIndex, reagentIndex);
 		--eprint("    recipe "..recipeIndex.." needs "..reagentCount.." of [#"..reagentIndex.."]");
 		if (reagentCount ~= nil) then 
-			--local link = GetTradeSkillReagentItemLink( recipeIndex, reagentIndex); -- known bug in 5.2.0: always returns nil
-			local link = CustomGetTradeSkillReagentItemLink( recipeIndex, reagentIndex);
+			local link = GetTradeSkillReagentItemLink( recipeIndex, reagentIndex);
 			if (link ~= nil) then
 				reagentID = ESL_GetIdFromLink( link );
 				--eprint("        reagentID : "..reagentID);
@@ -187,12 +176,14 @@ end
 
 local function UpdateCrafts(crafts)
 
-	for i = 1, GetNumTradeSkills() do
+	local skillCount = GetNumTradeSkills()
+	--eprint('Skill count:' .. skillCount)
+	for i = 1, skillCount do
 
 		local skillName, skillType = GetTradeSkillInfo(i);
 		if skillType ~= "header" and skillType ~= "subheader" then
 
-			----eprint (skillName.." is not header");
+			--eprint (skillName.." is not header");
 			-- handle reagents
 
 			local reagents = GetReagentStrings(i);
@@ -202,7 +193,7 @@ local function UpdateCrafts(crafts)
 				local recipeId = ESL_GetIdFromLink(link);
 
 				crafts[recipeId] = i.."|"..minMade.."|"..maxMade.."|"..SkillTypeToColor[skillType].."|"..table.concat( reagents, ";");
-				----eprint ("   "..string.gsub(crafts[recipeId],"|"," | "));
+				--eprint ("   "..string.gsub(crafts[recipeId],"|"," | "));
 			else
 				----eprint ("no reagents for recipe "..i);
 			end
@@ -231,7 +222,7 @@ local function ScanRecipes()
 	--eprint("starting recipe scan");
 	UpdateCrafts( ESL_CRAFTSDB[ pname ][ tradeskillName ] );
 	
-	--eprint("finished recipe scan");
+	eprint("finished recipe scan");
 	return true;
 end
 
@@ -246,4 +237,71 @@ function ESL_ScanTradeSkills()
 	RestoreActiveFilters();
 	SetTradeSkillItemNameFilter( namefilter );
 	return scanSuccessful;
+end
+
+
+-------------------------------------------------
+-------------------------------------------------
+ --         N E W   G U Y S   C O D E          --
+-------------------------------------------------
+-------------------------------------------------
+
+
+MRAX_Lookup = {};
+
+
+function MRAX_GetReagentStrings(recipeIndex)
+	local reagents = {};
+	local numberOfReagents = GetTradeSkillNumReagents(recipeIndex);
+
+	for reagentIndex = 1, numberOfReagents do
+		local link = GetTradeSkillReagentItemLink( recipeIndex, reagentIndex);
+		local _,_,reagentCount = GetTradeSkillReagentInfo(recipeIndex, reagentIndex);
+		eprint("    "..reagentCount.." x "..link);
+
+		reagents[reagentIndex] = {
+			['id'] = link,
+			['count'] = reagentCount,
+		};
+	end
+	return reagents;
+end
+
+
+
+-------------------------------------------------
+-- Trade skills window must be open for this scan
+-- to function.
+--
+--
+-- DISCLAMER:
+--
+-- Start simple: Always assume each trade skill
+-- will create the smallest amount when made!
+-------------------------------------------------
+function MRAX_GetTradeSkillInfoEx(recipeIndex)
+	local skillName, skillType = GetTradeSkillInfo(recipeIndex);
+
+	if (skillType == "header" or skillType == "subheader") then
+		eprint(skillType.." is a header");
+		return;
+	end
+
+	local link = GetTradeSkillItemLink(recipeIndex);
+
+	if (MRAX_Lookup[link] ~= nil) then
+		eprint('Found' .. link .. ' in lookup!');
+		return
+	end
+
+	local numberOfItemsMade, _ = GetTradeSkillNumMade(recipeIndex); -- Returns the number of items created when performing a tradeskill recipe
+	
+	--eprint(link .. ' is a ' .. skillType);
+
+	eprint('To produce '..numberOfItemsMade..' x '..link..' you need:')
+
+	local reagents = MRAX_GetReagentStrings(recipeIndex);
+	--for k,v in pairs(reagents) do eprint('    ' .. v['count'] .. ' x ' .. v['id']) end
+
+	MRAX_Lookup[link] = reagents;
 end

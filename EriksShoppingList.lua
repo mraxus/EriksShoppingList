@@ -20,6 +20,8 @@ local invSlots, invSlotID
 local haveMats
 local checkedOpening
 
+local ADDON_NAME = 'EriksShoppingList';
+
 local ProfessionSkill = {
 	["Alchemy"] = "Alchemy",
 	["Blacksmithing"] = "Blacksmithing",
@@ -88,7 +90,13 @@ local function InitSavedVars()
 end
 
 function ESL_Event(self, event, ...)
-    if ( event == "ADDON_LOADED" ) then
+	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
+
+  if ( event == "ADDON_LOADED" and arg1 == ADDON_NAME) then
+
+  	--eprint('Disabling normal loading for new testing...')
+  	--MRAX_GetTradeSkillInfoEx(50)
+
 		-- add "list all" button to tradeskill window
 		ESL_ListAllButton = CreateFrame( "Button", "ListAllButton", TradeSkillDetailScrollChildFrame, "ESL_ShowButton" );
 		ESL_ListAllButton:SetPoint("LEFT", TradeSkillReagentLabel, "RIGHT", 2, 4 );
@@ -143,13 +151,22 @@ function ESL_ListButtonClicked()
 	local icon = GetTradeSkillIcon( index );
 	local profession = GetTradeSkillLine();
 
+	eprint('skill-index: ' .. index .. ', name: ' .. skillName .. ', profession: ' .. profession);
+
 	ESL_SetCurrentRecipe(link, skillName, icon, profession);
+
+	eprint('current recipe set');
 	
 	if (not checkedOpening) then
+		eprint('scanning trade skills...');
 		checkedOpening = ESL_ScanTradeSkills();
-	end;	
+		eprint('trade skills scanned...');
+	end;
+	eprint('updating comlete list...');
 	ESL_UpdateCompleteList();
+	eprint('showing frame...');
 	ESL_Frame:Show();
+	eprint('ESL_ListButtonClicked done');
 end
 		
 function ESL_UpdateCompleteList()
