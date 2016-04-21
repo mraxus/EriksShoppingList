@@ -3,9 +3,6 @@
 
 invSlotID = nil;
 
-CreateFrame("GameTooltip", "ESLDataScanTooltip", UIParent, "GameTooltipTemplate")
-ESLDataScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-
 local SkillTypeToColor = {
 	["trivial"] = 0,		-- grey
 	["easy"] = 1,			-- green
@@ -122,6 +119,7 @@ end
 
 local function NotReadyForScan()
 	local tradeskillName = GetTradeSkillLine()
+	eprint('Checking ' .. tradeskillName .. '...')
 	if not tradeskillName or tradeskillName == "UNKNOWN" then
 		--eprint(" scan aborted: no tradeskillname");
 	-- may happen after a patch, or under extreme lag, so do not save anything to the db !
@@ -152,14 +150,6 @@ local function UpdateCraftsIcon(tradeskillName)
 	ESL_CRAFTSINFO[tradeskillName]["icon"] = GetTradeSkillTexture();
 end
 
-local function CustomGetTradeSkillReagentItemLink( recipeIndex, reagentIndex)
-	local tooltip = ESLDataScanTooltip;
-	tooltip:ClearLines();
-	tooltip:SetTradeSkillItem(recipeIndex, reagentIndex);
-	local _, link = tooltip:GetItem();
-	return link;
-end
-
 local function GetReagentStrings(recipeIndex)
 	local reagents = {};
 	local numReagents = GetTradeSkillNumReagents(recipeIndex);
@@ -169,8 +159,7 @@ local function GetReagentStrings(recipeIndex)
 		local _,_,reagentCount = GetTradeSkillReagentInfo( recipeIndex, reagentIndex);
 		--eprint("    recipe "..recipeIndex.." needs "..reagentCount.." of [#"..reagentIndex.."]");
 		if (reagentCount ~= nil) then 
-			--local link = GetTradeSkillReagentItemLink( recipeIndex, reagentIndex); -- known bug in 5.2.0: always returns nil
-			local link = CustomGetTradeSkillReagentItemLink( recipeIndex, reagentIndex);
+			local link = GetTradeSkillReagentItemLink( recipeIndex, reagentIndex);
 			if (link ~= nil) then
 				reagentID = ESL_GetIdFromLink( link );
 				--eprint("        reagentID : "..reagentID);
@@ -204,7 +193,7 @@ local function UpdateCrafts(crafts)
 				local recipeId = ESL_GetIdFromLink(link);
 
 				crafts[recipeId] = i.."|"..minMade.."|"..maxMade.."|"..SkillTypeToColor[skillType].."|"..table.concat( reagents, ";");
-				eprint ("   "..string.gsub(crafts[recipeId],"|"," | "));
+				--eprint ("   "..string.gsub(crafts[recipeId],"|"," | "));
 			else
 				----eprint ("no reagents for recipe "..i);
 			end

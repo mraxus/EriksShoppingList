@@ -94,11 +94,8 @@ function ESL_Event(self, event, ...)
 
   if ( event == "ADDON_LOADED" and arg1 == ADDON_NAME) then
 
-  	eprint('Disabling normal loading for new testing...')
-  	MRAX_GetTradeSkillInfoEx(50)
-  	MRAX_GetTradeSkillInfoEx(50)
-
-  elseif ( 1 == 2 ) then
+  	--eprint('Disabling normal loading for new testing...')
+  	--MRAX_GetTradeSkillInfoEx(50)
 
 		-- add "list all" button to tradeskill window
 		ESL_ListAllButton = CreateFrame( "Button", "ListAllButton", TradeSkillDetailScrollChildFrame, "ESL_ShowButton" );
