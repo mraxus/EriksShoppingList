@@ -1,0 +1,112 @@
+ <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="EriksShoppingList.lua"/>
+	<Script file="Shortcuts.lua"/>
+	<Frame name="ESL_ShortcutTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="44" y="64"/>
+		</Size>
+		<!-- Layers>
+			<Layer level="BACKGROUND">
+			<texture name="$parentBackground" file="Interface\BUTTONS\GREENGRAD64" />
+			</Layer>
+		</Layers -->
+		<Frames>
+			<Button name="$parentFillBtn" FrameStrata="HIGH">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="4" />
+				</Anchors>		
+				<Scripts>
+					<OnClick function="ESL_FillShortcut" />
+				</Scripts>
+				<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+
+			<Button name="$parentSlot" FrameStrata="LOW">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-24" />
+				</Anchors>	
+				<Scripts>
+					<OnClick function="ESL_ClickShortcut" />
+					<OnEnter function="ESL_SetShortcutTooltip" />
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>					
+				</Scripts>
+				<Size>
+					<AbsDimension x="37" y="37"/>
+				</Size>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIconTexture"/>
+					</Layer>
+				</Layers>
+				<NormalTexture name="$parentNormalTexture" urgency="5" file="Interface\Buttons\UI-EmptySlot">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-EmptySlot-White"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>			
+		</Frames>
+	</Frame>	
+  	<Button name="ESL_ItemTemplate" inherits="QuestItemTemplate, SecureActionButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick function="ESL_ClickReagent" />
+			<OnEnter function="ESL_SetGameToolTip" />
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+		</Scripts>
+		<Frames>
+			<Button name="$parent_TradeskillButton" inherits="SecureActionButtonTemplate" text="#">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-4" y="0" />
+				</Anchors>
+				<Attributes>
+					<Attribute name="type" value="spell" />
+					<Attribute name="spell" value="" />
+				</Attributes>
+				<Size>
+					<AbsDimension x="18" y="18"/>
+				</Size>
+				<NormalTexture name="$parentNormal" urgency="5" file="Interface\Buttons\UI-Panel-ExpandButton-Up"/>
+				<HighlightTexture urgency="5" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture urgency="5" file="Interface\MINIMAP\MiniMap-TrackingBorder">
+							<Anchors>
+								<Anchor point="CENTER" x="1" y="-2" />
+							</Anchors>
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<TexCoords left="0" right="0.65625" top="0.0" bottom="0.65625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+	</Button>
+	<Button name="ESL_ShowButton" inherits="OptionsButtonTemplate" text="List All >" virtual="true">
+		<Scripts>
+			<OnClick function="ESL_ListButtonClicked" />
+		</Scripts>
+	</Button>
+</Ui>
